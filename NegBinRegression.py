@@ -26,11 +26,16 @@ class NegBin(CountModel):
     def loglike(self, params):
         alpha = params[-1]
         beta = params[:-1]
+        print "=== params in loglike ===", params
         mu = np.exp(np.dot(self.exog, beta))
+        print "=== mu in loglike ===", mu
         size = 1 / alpha
         prob = size / (size+mu)
+        print "=== size in loglike ===", size
         const = gammaln(size+self.endog) - gammaln(self.endog+1) - gammaln(size)
+        print "=== const in loglike ===", const
         ll = const + self.endog*np.log(1-prob) + size*np.log(prob)
+        print "=== loglike ===", ll
         return np.sum(ll)
         
         
@@ -78,7 +83,6 @@ class NegBin(CountModel):
                 alpha* (y-mu)/(1+alpha*mu)).sum() / alpha**2
         
         res = np.r_[dparams.sum(0), dalpha]
-        print "--- score ---\n", res
         return res
         
     
@@ -86,7 +90,7 @@ class NegBin(CountModel):
         """
         Hessian of NB2 model.
         """
-        if True: # lnalpha came in during fit
+        if False: # lnalpha came in during fit
             alpha = np.exp(params[-1])
         else:
             alpha = params[-1]
@@ -96,7 +100,6 @@ class NegBin(CountModel):
         exog = self.exog
         y = self.endog[:,None]
         mu = np.exp(np.dot(self.exog, beta))[:,None]
-        print "=== mu ===\n", mu
 
         # for dl/dparams dparams
         dim = exog.shape[1]
